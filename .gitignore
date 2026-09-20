@@ -1,0 +1,76 @@
+# ==========================================================
+# Tripadinho - .gitignore
+# ==========================================================
+
+# Ambientes Virtuais Python
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Bytecode e Cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Arquivos de Variáveis de Ambiente e Segredos (NUNCA commitar)
+.env
+backend/.env
+*.env
+*.env.*
+!.env.example
+!backend/.env.example
+
+# Arquivos e Logs de Sistema
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# Configurações de IDEs e Editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Arquivos de Testes e Cobertura
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Cache local do Google ADK
+.adk/

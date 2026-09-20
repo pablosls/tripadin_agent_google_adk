@@ -1,0 +1,44 @@
+# Tarefas: Tripadinho
+
+- [x] **Configuração do Projeto e Backend**
+  - [x] Criar estrutura de pastas (`frontend/`, `backend/`)
+  - [x] Criar `backend/requirements.txt` e instalar dependências (`fastapi`, `uvicorn`, `supabase`, `google-generativeai`, `python-dotenv`)
+  - [x] Criar arquivo `.env` com as chaves (Supabase, Gemini)
+  - [x] Criar `backend/main.py` com estrutura básica do FastAPI (Rotas vazias e CORS)
+  - [x] Criar `backend/database.py` (Conexão Supabase)
+- [x] **Estruturação do Frontend (UI Base)**
+  - [x] Criar `frontend/index.html` (Home)
+  - [x] Criar `frontend/css/style.css` (Cores claras, Tailwind via CDN ou CSS puro)
+  - [x] Criar `frontend/js/app.js` (Lógica central, inicialização Supabase JS client)
+  - [x] Criar `frontend/profile.html` (Página de perfil vazia)
+  - [x] Criar `frontend/destination.html` (Página de destino vazia)
+- [x] **Integração de Autenticação (Supabase Google Auth)**
+  - [x] Configurar login Google no `frontend/js/app.js` (usando supabase-js v2 via CDN)
+  - [x] Mostrar botão de login na UI e ocultar se logado.
+  - [x] Lógica para validar o JWT/Token no FastAPI (opcional para rotas seguras, ou usar RLS no banco).
+- [x] **Busca Agêntica (Gemini)**
+  - [x] Criar Widget de chat no Frontend (`chatWidget.js` e CSS)
+  - [x] Configurar prompt do Gemini no backend (`/api/chat`)
+  - [x] Implementar Tool Calling para "search_places" ou simular dados estruturados iniciais.
+- [x] **Gerenciamento de Cards**
+  - [x] Endpoint `/cards/save` no backend
+  - [x] Buscar e listar cards no `profile.html`
+- [x] **Finalização e Testes**
+  - [x] Teste de ponta a ponta (Login -> Chat -> Salvar Card -> Perfil)
+- [x] **Agente Curador com Google ADK**
+  - [x] Criar pasta `adk_agent/` com `curator.py` e `tools.py`
+  - [x] Curadoria das 9 capitais do Nordeste e inserção de 54 experiências em `curated_cards` no Supabase
+  - [x] Geração e atualização de `curated_experiences_adk.md`
+- [x] **Destinos Dinâmicos & Catálogo de Experiências**
+  - [x] Leitura dinâmica de destinos do Supabase no Swiper slider da Home
+  - [x] Página completa `destination.html` com filtros por capitais e tipos
+  - [x] Botões dinâmicos de Salvar / Remover experiências com feedback imediato
+- [x] **Página Meus Objetivos**
+  - [x] Criar `objectives.html` com filtros por destino e estatísticas
+  - [x] Remoção direta no banco e na interface
+- [x] **Deploy e Produção no Google Cloud Run**
+  - [x] Criação de `Dockerfile` e `.dockerignore` otimizados para Cloud Run
+  - [x] Integração da Google ADK Web UI no endpoint `/adk/`
+  - [x] Deploy unificado do serviço `tripadinho` em `southamerica-east1`
+  - [x] Documentação completa de deploy no `README.md`
+

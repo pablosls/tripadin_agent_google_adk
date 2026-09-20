@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinos & Experiências - Tripadinho</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="flex-shrink-0 flex items-center text-2xl font-black text-blue-600 tracking-tight">
+                        🌴 Tripadinho
+                    </a>
+                    <div class="hidden md:flex space-x-4">
+                        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Início</a>
+                        <a href="destination.html" class="text-blue-600 font-bold px-3 py-2 rounded-md text-sm transition">Experiências</a>
+                        <a href="objectives.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Meus Objetivos</a>
+                        <a href="/adk/" target="_blank" class="text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold px-3 py-1.5 rounded-full transition text-xs flex items-center border border-purple-200">🤖 ADK Web UI</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="auth-section">
+                        <!-- Renderizado via app.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Hero Banner -->
+    <div class="relative bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 py-16 px-4 sm:px-6 lg:px-8 overflow-hidden shadow-inner">
+        <div class="absolute inset-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=2070&q=80" class="w-full h-full object-cover" alt="Background">
+        </div>
+        <div class="relative max-w-7xl mx-auto text-center">
+            <span class="inline-block bg-blue-500/30 text-blue-200 border border-blue-400/30 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-3">
+                Curadoria Oficial do Nordeste
+            </span>
+            <h1 id="page-title" class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
+                Experiências no Nordeste
+            </h1>
+            <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-light">
+                Descubra passeios imperdíveis, os melhores restaurantes e atrações locais cadastradas no banco de dados.
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+        
+        <!-- Filters Bar -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-8">
+            <!-- Filter by Destination (Capitais) -->
+            <div class="mb-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Filtrar por Destino:</span>
+                    <span id="active-dest-label" class="text-xs font-semibold text-blue-600">Todos os Destinos</span>
+                </div>
+                <div class="flex flex-wrap gap-2" id="destination-filters">
+                    <button class="dest-btn px-4 py-1.5 rounded-full text-xs font-bold transition bg-blue-600 text-white shadow-sm" data-city="Todos">
+                        Todos
+                    </button>
+                    <!-- Preenchido dinamicamente via JS com as 9 capitais -->
+                </div>
+            </div>
+
+            <!-- Filter by Type -->
+            <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center space-x-2" id="type-filters">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2">Tipo:</span>
+                    <button class="type-btn px-3 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 transition" data-type="Todos">Todos</button>
+                    <button class="type-btn px-3 py-1 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition" data-type="Passeio">🏝️ Passeios</button>
+                    <button class="type-btn px-3 py-1 rounded-lg text-xs font-bold bg-amber-50 text-amber-700 hover:bg-amber-100 transition" data-type="Restaurante">🍽️ Restaurantes</button>
+                    <button class="type-btn px-3 py-1 rounded-lg text-xs font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition" data-type="Local">📍 Locais</button>
+                </div>
+                <div class="text-xs text-slate-500 font-medium">
+                    Mostrando <span id="cards-count" class="font-bold text-slate-900">0</span> experiências
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="col-span-full text-center py-16 text-slate-400">
+                <svg class="w-10 h-10 mx-auto mb-3 animate-spin text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Carregando experiências do Supabase...
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Floating Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm font-medium">
+        <span id="toast-icon">✨</span>
+        <span id="toast-message">Mensagem do toast</span>
+    </div>
+
+    <!-- Chat Widget Container -->
+    <div id="chat-widget-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script src="js/chatWidget.js"></script>
+    <script>
+        const CAPITAIS = [
+            "Salvador", "Recife", "Fortaleza", 
+            "Natal", "João Pessoa", "Maceió", 
+            "Aracaju", "São Luís", "Teresina"
+        ];
+
+        let allExperiences = [];
+        let savedCardsMap = new Set(); // conjunto de títulos salvos
+        let selectedCity = 'Todos';
+        let selectedType = 'Todos';
+
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+            
+            toastIcon.textContent = isSuccess ? '✅' : 'ℹ️';
+            toastMsg.textContent = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Renderiza botões de filtro das capitais
+        function renderDestinationFilters() {
+            const container = document.getElementById('destination-filters');
+            CAPITAIS.forEach(city => {
+                const btn = document.createElement('button');
+                btn.className = "dest-btn px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-100 text-slate-700 hover:bg-slate-200";
+                btn.setAttribute('data-city', city);
+                btn.textContent = city;
+                btn.addEventListener('click', () => {
+                    setCityFilter(city);
+                });
+                container.appendChild(btn);
+            });
+
+            // Adiciona evento no botão 'Todos'
+            container.querySelector('[data-city="Todos"]').addEventListener('click', () => {
+                setCityFilter('Todos');
+            });
+        }
+
+        function setCityFilter(city) {
+            selectedCity = city;
+            document.querySelectorAll('.dest-btn').forEach(btn => {
+                if (btn.getAttribute('data-city') === city) {
+                    btn.className = "dest-btn px-4 py-1.5 rounded-full text-xs font-bold transition bg-blue-600 text-white shadow-sm";
+                } else {
+                    btn.className = "dest-btn px-4 py-1.5 rounded-full text-xs font-bold transition bg-slate-100 text-slate-700 hover:bg-slate-200";
+                }
+            });
+            document.getElementById('active-dest-label').textContent = city === 'Todos' ? 'Todos os Destinos' : city;
+            document.getElementById('page-title').textContent = city === 'Todos' ? 'Experiências no Nordeste' : `Experiências em ${city}`;
+            renderCards();
+        }
+
+        function setTypeFilter(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                if (btn.getAttribute('data-type') === type) {
+                    btn.classList.add('ring-2', 'ring-blue-600');
+                } else {
+                    btn.classList.remove('ring-2', 'ring-blue-600');
+                }
+            });
+            renderCards();
+        }
+
+        // Carrega cards salvos do usuário atual para marcar botões
+        async function loadUserSavedSet() {
+            savedCardsMap.clear();
+            if (!currentUser) return;
+            try {
+                const saved = await fetchUserSavedCards(currentUser.id);
+                saved.forEach(c => savedCardsMap.add(c.title));
+            } catch (err) {
+                console.warn("Erro ao buscar cartões salvos do usuário:", err);
+            }
+        }
+
+        // Carrega todas as experiências da API
+        async function loadExperiences() {
+            try {
+                const baseUrl = window.API_BASE !== undefined ? window.API_BASE : (window.location.port === '3000' ? 'http://127.0.0.1:8000' : '');
+                const res = await fetch(`${baseUrl}/api/experiences`);
+                if (!res.ok) throw new Error("Erro na requisição");
+                const data = await res.json();
+                allExperiences = data.experiences || [];
+                renderCards();
+            } catch (err) {
+                document.getElementById('cards-container').innerHTML = `
+                    <div class="col-span-full text-center py-12 text-red-500 font-medium">
+                        Não foi possível carregar as experiências. Certifique-se de que o backend está rodando.
+                    </div>
+                `;
+            }
+        }
+
+        // Renderiza a lista de cards
+        function renderCards() {
+            const container = document.getElementById('cards-container');
+            const filtered = allExperiences.filter(exp => {
+                const matchCity = (selectedCity === 'Todos') || (exp.destination === selectedCity);
+                const matchType = (selectedType === 'Todos') || (exp.type === selectedType);
+                return matchCity && matchType;
+            });
+
+            document.getElementById('cards-count').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+                        <p class="text-slate-500 font-medium">Nenhuma experiência encontrada para este filtro.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(exp => {
+                const isSaved = savedCardsMap.has(exp.title);
+                
+                let badgeColor = "bg-blue-50 text-blue-700 border-blue-200";
+                if (exp.type === 'Passeio') badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                if (exp.type === 'Restaurante') badgeColor = "bg-amber-50 text-amber-700 border-amber-200";
+
+                const buttonClass = isSaved 
+                    ? "bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100" 
+                    : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm";
+                
+                const buttonText = isSaved 
+                    ? `<svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg> Remover dos Objetivos`
+                    : `<svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg> Salvar em Meus Objetivos`;
+
+                return `
+                    <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition duration-300 border border-slate-200 flex flex-col overflow-hidden group">
+                        <!-- Card Image -->
+                        <div class="relative h-48 bg-slate-100 overflow-hidden">
+                            <img src="${exp.image}" alt="${exp.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+                            <div class="absolute top-3 left-3 flex space-x-1.5">
+                                <span class="text-xs font-bold px-2.5 py-1 rounded-full border shadow-sm ${badgeColor}">
+                                    ${exp.type}
+                                </span>
+                                <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-sm text-white shadow-sm">
+                                    📍 ${exp.destination}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition leading-snug">
+                                    ${exp.title}
+                                </h3>
+                                <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                                    ${exp.description}
+                                </p>
+                            </div>
+
+                            <!-- Action Button -->
+                            <div class="mt-5 pt-4 border-t border-slate-100">
+                                <button onclick="toggleCardSave('${encodeURIComponent(JSON.stringify(exp))}', this)" class="w-full py-2.5 px-4 rounded-xl font-bold text-xs flex items-center justify-center transition ${buttonClass}">
+                                    ${buttonText}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Alterna entre Salvar ou Remover dos Objetivos
+        async function toggleCardSave(expJsonEncoded, btn) {
+            if (!currentUser) {
+                alert("Você precisa entrar na sua conta para salvar experiências nos Meus Objetivos!");
+                signInWithGoogle();
+                return;
+            }
+
+            const exp = JSON.parse(decodeURIComponent(expJsonEncoded));
+            const isSaved = savedCardsMap.has(exp.title);
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-pulse">Atualizando...</span>`;
+
+            try {
+                if (isSaved) {
+                    // Remover
+                    await removeExperienceCard(currentUser.id, exp.title, exp.id);
+                    savedCardsMap.delete(exp.title);
+                    showToast(`"${exp.title}" removido dos Meus Objetivos!`, false);
+                } else {
+                    // Salvar
+                    await saveExperienceCard(currentUser.id, exp);
+                    savedCardsMap.add(exp.title);
+                    showToast(`"${exp.title}" salvo em Meus Objetivos!`, true);
+                }
+                renderCards();
+            } catch (err) {
+                console.error("Erro ao alternar status do card:", err);
+                showToast("Ocorreu um erro ao atualizar o objetivo.", false);
+                renderCards();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderDestinationFilters();
+            
+            // Listeners de tipos
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.addEventListener('click', () => setTypeFilter(btn.getAttribute('data-type')));
+            });
+
+            // Verifica parâmetro de URL ?city=...
+            const urlParams = new URLSearchParams(window.location.search);
+            const cityParam = urlParams.get('city');
+            if (cityParam && CAPITAIS.includes(cityParam)) {
+                setCityFilter(cityParam);
+            }
+
+            // Aguarda inicialização de auth e carrega dados
+            setTimeout(async () => {
+                await loadUserSavedSet();
+                await loadExperiences();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - Tripadinho</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex-shrink-0 flex items-center text-2xl font-bold text-blue-600">
+                        🌴 Tripadinho
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm">Início</a>
+                    <a href="destination.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm">Experiências</a>
+                    <a href="objectives.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm">Meus Objetivos</a>
+                    <div id="auth-section">
+                        <!-- Renderizado via app.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header & User Info -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div id="user-info-container" class="mb-10 hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center space-x-6">
+            <img id="user-avatar" src="" alt="Avatar" class="w-20 h-20 rounded-full border-4 border-blue-50">
+            <div>
+                <h1 id="user-name" class="text-2xl font-bold text-slate-900">Carregando...</h1>
+                <p id="user-email" class="text-slate-500"></p>
+                <p class="text-xs font-semibold text-blue-600 mt-2 bg-blue-50 inline-block px-2 py-1 rounded">Viajante Tripadinho</p>
+            </div>
+        </div>
+
+        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Meu Roteiro</h2>
+        <p class="mt-2 text-slate-500">Aqui estão as experiências que você salvou.</p>
+    </div>
+
+    <!-- Saved Cards Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12" id="saved-cards-container">
+        <!-- Loader -->
+        <div id="loading" class="text-slate-500">Carregando seus cards salvos...</div>
+    </div>
+
+    <!-- Chat Widget Container -->
+    <div id="chat-widget-container"></div>
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script src="js/chatWidget.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Wait a bit for auth to initialize
+            setTimeout(async () => {
+                if (!currentUser) {
+                    document.getElementById('saved-cards-container').innerHTML = `
+                        <div class="bg-red-50 text-red-600 p-4 rounded-md">
+                            Você precisa estar logado para ver seu perfil.
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display User Info
+                const userInfoContainer = document.getElementById('user-info-container');
+                const userAvatar = document.getElementById('user-avatar');
+                const userName = document.getElementById('user-name');
+                const userEmail = document.getElementById('user-email');
+                
+                userInfoContainer.classList.remove('hidden');
+                userEmail.textContent = currentUser.email;
+                
+                // Supabase Google Auth typically puts name and avatar in user_metadata
+                if (currentUser.user_metadata) {
+                    userName.textContent = currentUser.user_metadata.full_name || 'Viajante';
+                    if (currentUser.user_metadata.avatar_url) {
+                        userAvatar.src = currentUser.user_metadata.avatar_url;
+                    } else {
+                        userAvatar.src = `https://ui-avatars.com/api/?name=${currentUser.email}&background=0D8ABC&color=fff`;
+                    }
+                }
+
+                // Fetch saved cards from API
+                try {
+                    const baseUrl = window.API_BASE !== undefined ? window.API_BASE : (window.location.port === '3000' ? 'http://127.0.0.1:8000' : '');
+                    const response = await fetch(`${baseUrl}/cards/saved/${currentUser.id}`);
+                    if (!response.ok) throw new Error('Erro ao carregar');
+                    
+                    const data = await response.json();
+                    renderSavedCards(data.cards);
+                } catch (error) {
+                    document.getElementById('saved-cards-container').innerHTML = `
+                        <div class="text-red-500">Erro ao carregar os dados.</div>
+                    `;
+                }
+            }, 1000); // Simple delay to wait for checkSession
+        });
+
+        function renderSavedCards(cards) {
+            const container = document.getElementById('saved-cards-container');
+            if (cards.length === 0) {
+                container.innerHTML = `<div class="text-slate-500">Você ainda não tem lugares salvos. Use a IA para descobrir novos destinos!</div>`;
+                return;
+            }
+
+            // Group by destination
+            const grouped = cards.reduce((acc, card) => {
+                if (!acc[card.destination]) acc[card.destination] = [];
+                acc[card.destination].push(card);
+                return acc;
+            }, {});
+
+            container.innerHTML = '';
+            for (const [dest, destCards] of Object.entries(grouped)) {
+                let html = `<h2 class="text-2xl font-bold mt-8 mb-4 text-slate-800">${dest}</h2>`;
+                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                destCards.forEach(card => {
+                    html += `
+                        <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                            <div class="h-40 bg-slate-200" style="background-image: url('${card.image}'); background-size: cover; background-position: center;"></div>
+                            <div class="p-4">
+                                <span class="text-xs font-semibold text-blue-600 uppercase tracking-wider">${card.type}</span>
+                                <h3 class="text-lg font-bold text-slate-900 mt-1">${card.title}</h3>
+                                <p class="text-sm text-slate-600 mt-2">${card.description}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML += html;
+            }
+        }
+    </script>
+</body>
+</html>

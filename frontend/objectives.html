@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Objetivos - Tripadinho</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-6">
+                    <a href="index.html" class="flex-shrink-0 flex items-center text-2xl font-black text-blue-600 tracking-tight">
+                        🌴 Tripadinho
+                    </a>
+                    <div class="hidden md:flex space-x-4">
+                        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Início</a>
+                        <a href="destination.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Experiências</a>
+                        <a href="objectives.html" class="text-blue-600 font-bold px-3 py-2 rounded-md text-sm transition">Meus Objetivos</a>
+                        <a href="/adk/" target="_blank" class="text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold px-3 py-1.5 rounded-full transition text-xs flex items-center border border-purple-200">🤖 ADK Web UI</a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div id="auth-section">
+                        <!-- Renderizado via app.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="bg-white border-b border-slate-200 py-10 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full mb-3">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                        <span>Seu Planejamento de Viagem</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                        Meus Objetivos
+                    </h1>
+                    <p class="text-slate-500 mt-1 text-sm sm:text-base">
+                        Todas as experiências, atrações e restaurantes que você salvou para suas próximas viagens.
+                    </p>
+                </div>
+
+                <!-- Stats Badges -->
+                <div class="flex items-center space-x-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center min-w-[110px]">
+                        <span id="stat-total" class="text-2xl font-black text-blue-600">0</span>
+                        <p class="text-xs font-bold text-slate-400 uppercase mt-0.5">Experiências</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center min-w-[110px]">
+                        <span id="stat-destinations" class="text-2xl font-black text-emerald-600">0</span>
+                        <p class="text-xs font-bold text-slate-400 uppercase mt-0.5">Destinos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow w-full">
+        
+        <!-- Destination Filter Pills -->
+        <div id="filter-bar" class="mb-8 hidden">
+            <div class="flex items-center space-x-2 overflow-x-auto pb-2" id="dest-pills">
+                <!-- Preenchido via JS com destinos salvos -->
+            </div>
+        </div>
+
+        <!-- Objectives Container -->
+        <div id="objectives-container">
+            <!-- Loading -->
+            <div id="loading" class="text-center py-20 text-slate-400">
+                <svg class="w-8 h-8 mx-auto mb-3 animate-spin text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                Carregando seus objetivos salvos...
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm font-medium">
+        <span id="toast-icon">🗑️</span>
+        <span id="toast-message">Mensagem do toast</span>
+    </div>
+
+    <!-- Chat Widget Container -->
+    <div id="chat-widget-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+    <script src="js/chatWidget.js"></script>
+    <script>
+        let savedCards = [];
+        let selectedFilter = 'Todos';
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        async function loadObjectives() {
+            const container = document.getElementById('objectives-container');
+            
+            if (!currentUser) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-lg mx-auto shadow-sm">
+                        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-900 mb-2">Acesse sua conta</h2>
+                        <p class="text-slate-500 text-sm mb-6">Entre com sua conta do Google para visualizar e gerenciar seus objetivos e roteiros salvos.</p>
+                        <button onclick="signInWithGoogle()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition shadow-md">
+                            Entrar com Google
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                savedCards = await fetchUserSavedCards(currentUser.id);
+                updateStats();
+                renderPills();
+                renderCards();
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="text-center py-16 text-red-500 font-medium">
+                        Erro ao carregar seus objetivos. Tente novamente mais tarde.
+                    </div>
+                `;
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = savedCards.length;
+            const uniqueDestinations = new Set(savedCards.map(c => c.destination));
+            document.getElementById('stat-destinations').textContent = uniqueDestinations.size;
+        }
+
+        function renderPills() {
+            const filterBar = document.getElementById('filter-bar');
+            const destPills = document.getElementById('dest-pills');
+            
+            if (savedCards.length === 0) {
+                filterBar.classList.add('hidden');
+                return;
+            }
+
+            filterBar.classList.remove('hidden');
+            const destinations = ['Todos', ...new Set(savedCards.map(c => c.destination))];
+
+            destPills.innerHTML = destinations.map(dest => {
+                const count = dest === 'Todos' ? savedCards.length : savedCards.filter(c => c.destination === dest).length;
+                const active = selectedFilter === dest;
+                const cls = active 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100';
+                
+                return `
+                    <button onclick="selectFilter('${dest}')" class="px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap ${cls}">
+                        <span>${dest}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded-full ${active ? 'bg-blue-500 text-white' : 'bg-slate-100 text-slate-600'}">${count}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectFilter(dest) {
+            selectedFilter = dest;
+            renderPills();
+            renderCards();
+        }
+
+        function renderCards() {
+            const container = document.getElementById('objectives-container');
+
+            if (savedCards.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-3xl border border-dashed border-slate-300 p-16 text-center max-w-lg mx-auto">
+                        <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-slate-900 mb-2">Nenhum objetivo salvo ainda</h2>
+                        <p class="text-slate-500 text-sm mb-6">Explore o catálogo de destinos ou converse com nossa IA para adicionar experiências ao seu roteiro!</p>
+                        <a href="destination.html" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition shadow-md">
+                            Explorar Experiências do Nordeste
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            const filtered = selectedFilter === 'Todos' 
+                ? savedCards 
+                : savedCards.filter(c => c.destination === selectedFilter);
+
+            // Group by Destination
+            const grouped = filtered.reduce((acc, card) => {
+                if (!acc[card.destination]) acc[card.destination] = [];
+                acc[card.destination].push(card);
+                return acc;
+            }, {});
+
+            let html = '';
+            for (const [dest, cards] of Object.entries(grouped)) {
+                html += `
+                    <div class="mb-12">
+                        <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-2">
+                            <h2 class="text-2xl font-black text-slate-800 flex items-center">
+                                <span class="mr-2">📍</span> ${dest}
+                            </h2>
+                            <span class="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">
+                                ${cards.length} ${cards.length === 1 ? 'experiência' : 'experiências'}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                `;
+
+                cards.forEach(card => {
+                    let badgeColor = "bg-blue-50 text-blue-700 border-blue-200";
+                    if (card.type === 'Passeio') badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                    if (card.type === 'Restaurante') badgeColor = "bg-amber-50 text-amber-700 border-amber-200";
+
+                    html += `
+                        <div id="card-${card.id || card.title.replace(/[^a-zA-Z0-9]/g, '')}" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-md transition duration-300">
+                            <div>
+                                <div class="relative h-44 bg-slate-100 overflow-hidden">
+                                    <img src="${card.image}" alt="${card.title}" class="w-full h-full object-cover" loading="lazy">
+                                    <span class="absolute top-3 left-3 text-xs font-bold px-2.5 py-1 rounded-full border shadow-sm ${badgeColor}">
+                                        ${card.type || 'Experiência'}
+                                    </span>
+                                </div>
+                                <div class="p-5">
+                                    <h3 class="text-lg font-bold text-slate-900 leading-snug">
+                                        ${card.title}
+                                    </h3>
+                                    <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+                                        ${card.description || ''}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Remove Button -->
+                            <div class="p-5 pt-0">
+                                <button onclick="removeObjective('${card.title}', '${card.card_id || card.id}')" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    Remover dos Meus Objetivos
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        async function removeObjective(title, cardId) {
+            if (!currentUser) return;
+            
+            try {
+                await removeExperienceCard(currentUser.id, title, cardId);
+                savedCards = savedCards.filter(c => c.title !== title);
+                showToast(`"${title}" removido com sucesso!`);
+                updateStats();
+                renderPills();
+                renderCards();
+            } catch (err) {
+                console.error("Erro ao remover objetivo:", err);
+                showToast("Erro ao remover objetivo. Tente novamente.");
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadObjectives, 600);
+        });
+    </script>
+</body>
+</html>

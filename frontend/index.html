@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tripadinho - O Seu Guia Inteligente do Nordeste</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased overflow-x-hidden">
+
+    <!-- Navbar Transparente (Fica fixa ao rolar) -->
+    <nav class="fixed w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-md shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex-shrink-0 flex items-center text-3xl font-extrabold text-blue-600 tracking-tight">
+                        <svg class="w-8 h-8 mr-2 text-blue-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Tripadinho
+                    </a>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <a href="#destinos" class="text-slate-600 hover:text-blue-600 font-semibold transition">Destinos</a>
+                    <a href="destination.html" class="text-slate-600 hover:text-blue-600 font-semibold transition">Experiências</a>
+                    <a href="objectives.html" class="text-slate-600 hover:text-blue-600 font-semibold transition">Meus Objetivos</a>
+                    <a href="/adk/" target="_blank" class="text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold px-3 py-1.5 rounded-full transition text-xs flex items-center border border-purple-200">🤖 ADK Web UI</a>
+                    <div id="auth-section">
+                        <button id="login-btn" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-blue-700 hover:shadow-lg transition transform hover:-translate-y-0.5">
+                            Entrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section (Fullscreen) -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <!-- Background Image Slider -->
+        <div class="absolute inset-0 z-0 bg-slate-900 overflow-hidden" id="hero-slider">
+            <!-- 5 Imagens de Praia/Viagem -->
+            <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=2070&q=80" class="hero-bg absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-100 animate-kenburns" alt="Praia 1">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2070&auto=format&fit=crop" class="hero-bg absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 animate-kenburns" alt="Praia 2">
+            <img src="https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=2070&auto=format&fit=crop" class="hero-bg absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 animate-kenburns" alt="Praia 3">
+            <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?q=80&w=2070&auto=format&fit=crop" class="hero-bg absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 animate-kenburns" alt="Praia 4">
+            <img src="https://images.unsplash.com/photo-1624800223707-1647413000b0?q=80&w=2070&auto=format&fit=crop" class="hero-bg absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 opacity-0 animate-kenburns" alt="Praia 5">
+            
+            <div class="absolute inset-0 bg-gradient-to-b from-slate-900/40 via-slate-900/30 to-slate-900/70 z-10"></div>
+        </div>
+        
+        <div class="relative z-20 text-center px-4 max-w-4xl mx-auto mt-16" data-aos="fade-up" data-aos-duration="1000">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 drop-shadow-lg leading-tight">
+                Descubra o <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Nordeste</span> como nunca antes
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-200 mb-10 drop-shadow font-light" data-aos="fade-up" data-aos-delay="200">
+                O primeiro portal de viagens focado na região nordeste com Inteligência Artificial para planejar seu roteiro perfeito.
+            </p>
+            <div data-aos="zoom-in" data-aos-delay="400">
+                <a href="#destinos" class="inline-flex items-center justify-center bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-500 hover:shadow-xl transition transform hover:scale-105 animate-bounce-slow">
+                    Começar a Explorar
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- SVG Wave Bottom -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none z-20">
+            <svg class="relative block w-full h-16 md:h-24" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,119.92,200.7,109.14,242.16,102.73,283.47,81.42,321.39,56.44Z" class="fill-slate-50"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="como-funciona" class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-sm font-bold text-blue-600 tracking-wide uppercase">Por que usar o Tripadinho?</h2>
+                <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                    Planejamento de Viagem Inteligente
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <!-- Feature 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-2 border border-slate-100" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Guia Virtual com IA</h3>
+                    <p class="text-slate-600 leading-relaxed">Converse com nosso assistente virtual. Diga o que você gosta e deixe a inteligência artificial encontrar os melhores lugares.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-2 border border-slate-100" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Monte seu Roteiro</h3>
+                    <p class="text-slate-600 leading-relaxed">Gostou de uma sugestão? Salve os cartões de passeios e restaurantes diretamente no seu perfil com um clique.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-2 border border-slate-100" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Foco no Nordeste</h3>
+                    <p class="text-slate-600 leading-relaxed">Especializado nas capitais e destinos mais paradisíacos do nordeste brasileiro. Informações precisas e curadas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slider Destinos (Swiper) -->
+    <section id="destinos" class="py-20 bg-white relative overflow-hidden">
+        <!-- Decoration SVG -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 opacity-10">
+            <svg width="404" height="404" fill="none" viewBox="0 0 404 404"><defs><pattern id="pattern-circles" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="2" class="text-blue-600" fill="currentColor" /></pattern></defs><rect width="404" height="404" fill="url(#pattern-circles)" /></svg>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-end mb-10" data-aos="fade-right">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Destinos Imperdíveis</h2>
+                    <p class="text-slate-500 mt-2">Arraste para o lado e escolha sua próxima viagem.</p>
+                </div>
+                <!-- Swiper Navigation -->
+                <div class="hidden md:flex space-x-2">
+                    <button class="swiper-button-prev-custom w-10 h-10 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-600 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button class="swiper-button-next-custom w-10 h-10 rounded-full border border-slate-300 flex items-center justify-center text-slate-600 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-600 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Swiper Container -->
+            <div class="swiper destinations-slider pb-12" data-aos="fade-up">
+                <div class="swiper-wrapper" id="destinations-wrapper">
+                    <!-- Slide Salvador -->
+                    <div class="swiper-slide">
+                        <a href="destination.html?city=Salvador" class="block group relative rounded-2xl overflow-hidden shadow-md aspect-[3/4]">
+                            <img src="https://images.unsplash.com/photo-1624800223707-1647413000b0?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6">
+                                <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Bahia</span>
+                                <h3 class="text-2xl font-bold text-white mb-1">Salvador</h3>
+                                <p class="text-slate-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">História, música e praias.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Slide Recife -->
+                    <div class="swiper-slide">
+                        <a href="destination.html?city=Recife" class="block group relative rounded-2xl overflow-hidden shadow-md aspect-[3/4]">
+                            <img src="https://images.unsplash.com/photo-1629739414571-085e3a8bce73?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6">
+                                <span class="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pernambuco</span>
+                                <h3 class="text-2xl font-bold text-white mb-1">Recife</h3>
+                                <p class="text-slate-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">Cultura rica e encantos.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Slide Fortaleza -->
+                    <div class="swiper-slide">
+                        <a href="destination.html?city=Fortaleza" class="block group relative rounded-2xl overflow-hidden shadow-md aspect-[3/4]">
+                            <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6">
+                                <span class="bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Ceará</span>
+                                <h3 class="text-2xl font-bold text-white mb-1">Fortaleza</h3>
+                                <p class="text-slate-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">Sol o ano inteiro.</p>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- Slide Maceió -->
+                    <div class="swiper-slide">
+                        <a href="destination.html?city=Maceio" class="block group relative rounded-2xl overflow-hidden shadow-md aspect-[3/4]">
+                            <img src="https://images.unsplash.com/photo-1610996847116-56641e7546cb?q=80&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 p-6">
+                                <span class="bg-cyan-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Alagoas</span>
+                                <h3 class="text-2xl font-bold text-white mb-1">Maceió</h3>
+                                <p class="text-slate-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">O Caribe brasileiro.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="swiper-pagination mt-8"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Promo Banner -->
+    <section class="py-24 bg-blue-600 relative overflow-hidden">
+        <!-- Animated Background Elements -->
+        <div class="absolute top-10 left-10 w-32 h-32 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+        <div class="absolute top-10 right-20 w-32 h-32 bg-cyan-400 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-40 w-40 h-40 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl flex flex-col md:flex-row items-center justify-between" data-aos="zoom-in">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">Não sabe por onde começar?</h2>
+                    <p class="text-blue-100 text-lg mb-8">Nossa Inteligência Artificial monta o roteiro perfeito pra você. Pergunte sobre restaurantes, praias paradisíacas ou passeios culturais e salve tudo com um clique.</p>
+                    <button onclick="document.getElementById('chat-widget-button').click()" class="bg-white text-blue-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-slate-50 transition shadow-lg transform hover:-translate-y-1">
+                        Conversar com a IA agora
+                    </button>
+                </div>
+                <div class="md:w-5/12 relative">
+                    <!-- Fake Chat UI Mockup -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden animate-float">
+                        <div class="bg-slate-100 px-4 py-3 border-b border-slate-200 flex items-center space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div class="flex justify-end">
+                                <div class="bg-blue-600 text-white p-3 rounded-l-xl rounded-tr-xl max-w-[80%] text-sm">Me sugere um lugar romântico em Salvador?</div>
+                            </div>
+                            <div class="flex justify-start">
+                                <div class="bg-slate-100 text-slate-700 p-3 rounded-r-xl rounded-tl-xl max-w-[80%] text-sm shadow-sm border border-slate-200">
+                                    <span class="block mb-2 font-bold text-blue-600">Restaurante Amado 🍷</span>
+                                    Alta gastronomia com vista para a Baía de Todos os Santos!
+                                    <div class="mt-2 text-xs font-semibold text-center text-slate-500 border border-slate-300 rounded px-2 py-1 bg-white">✔ Salvo no Perfil</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <span class="text-2xl font-bold text-white">🌴 Tripadinho</span>
+            </div>
+            <p class="text-sm">© 2024 Tripadinho. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Chat Widget Container -->
+    <div id="chat-widget-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/chatWidget.js"></script>
+
+    <script>
+        // Init AOS
+        AOS.init({
+            once: true,
+            offset: 50,
+        });
+
+        // Init Swiper dynamically from Supabase API
+        async function loadDestinations() {
+            const wrapper = document.getElementById('destinations-wrapper');
+            try {
+                const baseUrl = window.API_BASE !== undefined ? window.API_BASE : (window.location.port === '3000' ? 'http://127.0.0.1:8000' : '');
+                const res = await fetch(`${baseUrl}/api/destinations`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.destinations && data.destinations.length > 0) {
+                        wrapper.innerHTML = data.destinations.map(dest => `
+                            <div class="swiper-slide">
+                                <a href="destination.html?city=${encodeURIComponent(dest.destination)}" class="block group relative rounded-2xl overflow-hidden shadow-md aspect-[3/4]">
+                                    <img src="${dest.image}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="${dest.destination}">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent"></div>
+                                    <div class="absolute bottom-0 left-0 p-6">
+                                        <span class="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">${dest.state}</span>
+                                        <h3 class="text-2xl font-bold text-white mb-1">${dest.destination}</h3>
+                                        <p class="text-slate-200 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover:translate-y-0">${dest.count} experiências no Supabase</p>
+                                    </div>
+                                </a>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (err) {
+                console.warn('Usando destinos locais como fallback:', err);
+            }
+
+            // Inicia o carrossel Swiper
+            new Swiper('.destinations-slider', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                loop: true,
+                autoplay: {
+                    delay: 3500,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next-custom',
+                    prevEl: '.swiper-button-prev-custom',
+                },
+                breakpoints: {
+                    640: { slidesPerView: 2, spaceBetween: 20 },
+                    1024: { slidesPerView: 3, spaceBetween: 30 },
+                    1280: { slidesPerView: 4, spaceBetween: 24 },
+                }
+            });
+        }
+
+        loadDestinations();
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                nav.classList.add('shadow-md');
+            } else {
+                nav.classList.remove('shadow-md');
+            }
+        });
+
+        // Hero Background Slider Logic
+        const heroImages = document.querySelectorAll('.hero-bg');
+        let currentImageIndex = 0;
+
+        if (heroImages.length > 0) {
+            setInterval(() => {
+                // Esconde a atual
+                heroImages[currentImageIndex].classList.remove('opacity-100');
+                heroImages[currentImageIndex].classList.add('opacity-0');
+                
+                // Vai para a próxima
+                currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+                
+                // Mostra a nova
+                heroImages[currentImageIndex].classList.remove('opacity-0');
+                heroImages[currentImageIndex].classList.add('opacity-100');
+            }, 6000); // Troca a cada 6 segundos
+        }
+    </script>
+</body>
+</html>
