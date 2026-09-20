@@ -225,6 +225,73 @@ Após obter a URL gerada pelo Cloud Run (ex: `https://tripadinho-...run.app`):
 
 ## 📈 Arquitetura e Escalabilidade
 
+Abaixo está o diagrama arquitetural completo do Tripadinho, ilustrando o fluxo de dados entre o Frontend, Backend (Cloud Run), Autenticação e Agentes de IA.
+
+```mermaid
+flowchart TD
+    %% Cores e Estilos
+    classDef client fill:#e0f2fe,stroke:#0284c7,stroke-width:2px;
+    classDef server fill:#fef3c7,stroke:#d97706,stroke-width:2px;
+    classDef database fill:#dcfce7,stroke:#16a34a,stroke-width:2px;
+    classDef ai fill:#f3e8ff,stroke:#7e22ce,stroke-width:2px;
+
+    %% Atores
+    User(["Turista / Usuário"])
+    
+    %% Camada de Apresentação (Frontend)
+    subgraph Frontend ["Frontend Web (Navegador)"]
+        UI["Interface (HTML/JS/Tailwind)"]
+        ChatUI["Chat Widget"]
+    end
+    class Frontend client
+
+    %% Camada de Servidor (Google Cloud Run)
+    subgraph Backend ["Backend Unified (FastAPI no Cloud Run)"]
+        API["REST API (Endpoints)"]
+        Static["Servidor de Estáticos"]
+        GeminiClient["Integração Gemini"]
+    end
+    class Backend server
+
+    %% Camada de Inteligência Artificial
+    subgraph IA ["Google AI"]
+        ADK["ADK Agent (Curador Offline)"]
+        GeminiModel["Gemini 3.6 Flash (Chatbot)"]
+    end
+    class IA ai
+
+    %% Camada de Dados e Segurança
+    subgraph Supabase ["Supabase (PaaS)"]
+        Auth["Supabase Auth (JWT & OAuth)"]
+        Postgres[(PostgreSQL)]
+        RLS{"Row Level Security"}
+    end
+    class Supabase database
+
+    %% Fluxos de Conexão
+    User -- "Acessa URLs" --> Static
+    User -- "Faz Login / OAuth" --> Auth
+    User -- "Navega / Salva Cards" --> UI
+    User -- "Faz Perguntas" --> ChatUI
+
+    Static -- "Serve HTML/JS" --> UI
+    UI -- "Busca Credenciais & Dados" --> API
+    UI -- "Auth Flow" --> Auth
+    ChatUI -- "Prompt via API" --> API
+
+    API -- "Valida JWT" --> Auth
+    API -- "CRUD (Bypassa RLS via Service Role)" --> Postgres
+    API -- "Envia Contexto e Prompt" --> GeminiClient
+    GeminiClient -- "Gera Respostas Inteligentes" --> GeminiModel
+
+    ADK -- "Pesquisa & Formata JSON" --> GeminiModel
+    ADK -- "Popula Base de Dados Contínua" --> Postgres
+    Postgres -- "Filtra acessos" --> RLS
+
+    %% Conexões lógicas visuais
+    Auth -. "Gera Token JWT" .-> UI
+```
+
 A arquitetura do Tripadinho foi desenhada para ser moderna, *serverless* e altamente escalável para suportar picos bruscos de acessos (viralização).
 
 ### Camadas de Escalonamento:
