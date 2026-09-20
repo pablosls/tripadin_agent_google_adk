@@ -223,6 +223,23 @@ Após obter a URL gerada pelo Cloud Run (ex: `https://tripadinho-...run.app`):
 
 ---
 
+## 📈 Arquitetura e Escalabilidade
+
+A arquitetura do Tripadinho foi desenhada para ser moderna, *serverless* e altamente escalável para suportar picos bruscos de acessos (viralização).
+
+### Camadas de Escalonamento:
+1. **Google Cloud Run (Servidor Web):**  
+   - Escala automaticamente para atender de 0 a milhares de acessos simultâneos. Cria novas instâncias da aplicação em poucos segundos para atender à demanda.
+   - *Limitação:* Suporta milhares de requisições por segundo (RPS). O limite é dado apenas pelas configurações de cota da conta Google Cloud.
+2. **Backend (FastAPI):**  
+   - Framework Python extremamente veloz e totalmente assíncrono. Enquanto aguarda resposta de chamadas de rede ou do banco de dados, consegue atender múltiplos usuários simultaneamente na mesma thread.
+3. **Banco de Dados & Autenticação (Supabase / PostgreSQL):**  
+   - **Gargalo de Camada Gratuita:** O limite real de escalabilidade inicial reside no plano gratuito do Supabase.  
+   - *Limites:* Suporta até 50.000 Usuários Ativos Mensais (MAU) e possui limites estritos de conexões simultâneas diretas ao PostgreSQL.
+   - *Solução:* A plataforma utiliza Connection Pooling interno para otimizar conexões. Caso o tráfego exceda os limites do plano *Free*, a migração para o plano *Pro* destrava gargalos de leitura/escrita e usuários simultâneos instantaneamente.
+
+---
+
 ## 📑 Documentação Complementar
 
 - **[PRD.md](PRD.md):** Requisitos de Produto, Objetivos de Negócio, Personas, Jornada do Usuário e Estratégia de Monetização.
