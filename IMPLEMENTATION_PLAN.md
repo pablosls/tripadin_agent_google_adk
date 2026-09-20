@@ -58,5 +58,23 @@ Implementar a leitura dinâmica dos destinos do Supabase, página completa de Ex
    - Acessar `http://localhost:3000` e verificar se os destinos são carregados do banco.
    - Acessar a página de experiências (`destination.html`) e testar navegação entre capitais.
    - Clicar em "Salvar em Meus Objetivos" e conferir mudança visual do botão para "Remover".
-   - Abrir `objectives.html` ("Meus Objetivos") e validar se o card aparece na lista.
-   - Clicar em "Remover" na página de objetivos e conferir remoção no banco e na tela.
+   - Checar se os itens salvos aparecem corretamente em "Meus Objetivos".
+
+---
+
+## Atualização Secundária: Segurança e Supabase Auth
+
+Após a implementação inicial, o projeto foi fortificado com o módulo de Autenticação do Supabase (Google OAuth e E-mail/Senha).
+
+### [MODIFY] [backend/main.py](file:///Users/pablosls/Desktop/develop/antigravity/tripadinho/backend/main.py)
+- Proteção da API: implementação da dependência `Depends(get_current_user)` checando o Token JWT para todos os endpoints `/cards/*` e para o `DELETE /api/users/me`.
+- Liberação do endpoint estático de credenciais (`/api/config`) para injeção segura no front-end.
+
+### [NEW] [frontend/js/auth.js](file:///Users/pablosls/Desktop/develop/antigravity/tripadinho/frontend/js/auth.js)
+- Controlador de sessão unificado e empacotador de requisições `fetchWithAuth(url, options)` para anexar automaticamente o Bearer JWT nas requisições ao backend.
+
+### [NEW] [frontend/login.html](file:///Users/pablosls/Desktop/develop/antigravity/tripadinho/frontend/login.html)
+- Interface oficial de login e criação de contas conectada ao Supabase Auth.
+
+### [NEW] [frontend/profile.html](file:///Users/pablosls/Desktop/develop/antigravity/tripadinho/frontend/profile.html)
+- Tela de Perfil do Usuário para exibir os metadados do provedor OAuth e disponibilizar a função de exclusão definitiva da conta.

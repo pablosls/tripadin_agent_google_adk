@@ -28,11 +28,15 @@
                 <div class="flex items-center space-x-6">
                     <a href="#destinos" class="text-slate-600 hover:text-blue-600 font-semibold transition">Destinos</a>
                     <a href="destination.html" class="text-slate-600 hover:text-blue-600 font-semibold transition">Experiências</a>
-                    <a href="objectives.html" class="text-slate-600 hover:text-blue-600 font-semibold transition">Meus Objetivos</a>
+                    <a href="objectives.html" class="text-slate-600 hover:text-blue-600 font-semibold transition auth-logged-in hidden">Meus Objetivos</a>
+                    <a href="profile.html" class="text-slate-600 hover:text-blue-600 font-semibold transition auth-logged-in hidden">Meu Perfil</a>
                     <a href="/adk/" target="_blank" class="text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold px-3 py-1.5 rounded-full transition text-xs flex items-center border border-purple-200">🤖 ADK Web UI</a>
                     <div id="auth-section">
-                        <button id="login-btn" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-blue-700 hover:shadow-lg transition transform hover:-translate-y-0.5">
+                        <a href="login.html" id="login-btn" class="auth-logged-out bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-blue-700 hover:shadow-lg transition transform hover:-translate-y-0.5 inline-block">
                             Entrar
+                        </a>
+                        <button onclick="window.auth.signOut()" class="auth-logged-in hidden text-red-600 hover:text-red-800 font-semibold ml-4">
+                            Sair
                         </button>
                     </div>
                 </div>
@@ -258,6 +262,10 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/app.js"></script>
     <script src="js/chatWidget.js"></script>
+
+    <!-- Auth & Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth.js"></script>
 
     <script>
         // Init AOS

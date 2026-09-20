@@ -130,12 +130,14 @@ flowchart LR
 
 ## 10. Roadmap de Evolução
 
-- [x] **Fase 1 (MVP Atual):**
+- [x] **Fase 1 (MVP Atualizado - Concluído):**
   - Catálogo das 9 capitais integrado ao Supabase.
   - Agente Curador autônomo com Google ADK.
-  - Botão dinâmico de Salvar/Remover.
-  - Página dedicada "Meus Objetivos".
-  - Chat conversacional com Gemini 3.6 Flash.
+  - Chat conversacional inteligente (Gemini 3.6 Flash) com tool calling.
+  - Sistema de Contas Seguro (Supabase Auth - JWT, E-mail/Senha e Login Social com Google).
+  - Página dedicada "Meus Objetivos" protegida por sessão.
+  - Página "Meu Perfil" com opção de Exclusão Definitiva de Conta.
+  - Deploy em Nuvem Serverless (Google Cloud Run) num contêiner único.
 - [ ] **Fase 2 (Próximos Passos):**
   - Estimativa de custos e orçamentos em "Meus Objetivos" (calculadora de viagem).
   - Exportação do roteiro salvo para calendário (Google Calendar / iCal) e WhatsApp.

@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS curated_cards (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Desativa RLS para permitir inserções e leituras pelo agente e frontend
-ALTER TABLE curated_cards DISABLE ROW LEVEL SECURITY;
+-- Ativa RLS para aumentar a segurança do banco
+ALTER TABLE curated_cards ENABLE ROW LEVEL SECURITY;
 
 -- 2. Tabela de Objetivos Salvos pelo Usuário
 CREATE TABLE IF NOT EXISTS saved_cards (
@@ -29,8 +29,8 @@ CREATE TABLE IF NOT EXISTS saved_cards (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Desativa RLS para permitir que o usuário salve e remova seus objetivos
-ALTER TABLE saved_cards DISABLE ROW LEVEL SECURITY;
+-- Ativa RLS para aumentar a segurança do banco
+ALTER TABLE saved_cards ENABLE ROW LEVEL SECURITY;
 
 -- Opcional: Índices para otimização de busca
 CREATE INDEX IF NOT EXISTS idx_curated_destination ON curated_cards(destination);

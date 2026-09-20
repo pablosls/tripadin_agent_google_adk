@@ -99,9 +99,12 @@ Siga os 5 passos abaixo para configurar e rodar o projeto em qualquer máquina:
    ```
 2. Preencha as chaves:
    - `SUPABASE_URL`: URL do projeto no Supabase (ex: `https://xxxx.supabase.co`).
-   - `SUPABASE_KEY`: Chave anônima / pública do Supabase.
+   - `SUPABASE_KEY`: Chave do Service Role do Supabase (para que a API possa bypassar as restrições RLS de segurança e registrar/remover dados do banco adequadamente).
+   - `SUPABASE_ANON_KEY`: Chave anônima / pública do Supabase, que o backend vai expor pro frontend via rota `/api/config`.
    - `GEMINI_API_KEY`: Chave gratuita gerada no [Google AI Studio](https://aistudio.google.com/app/apikey).
-3. No frontend (`frontend/js/app.js`), certifique-se de que as constantes `SUPABASE_URL` e `SUPABASE_KEY` no início do arquivo apontam para o mesmo projeto Supabase.
+   - `ADK_USER` e `ADK_PASS`: Credenciais seguras para acesso ao portal Google ADK Web UI.
+
+*(Nota: O frontend agora baixa a configuração de credenciais via `/api/config`, não sendo mais necessário hardcodar as chaves no JavaScript!)*
 
 ---
 
@@ -133,25 +136,19 @@ cd ..
 
 ---
 
-### 5. Inicializar os Servidores
+### 5. Inicializar o Servidor Unificado
 
-Abra dois terminais (ou execute em segundo plano):
+O FastAPI já está configurado para servir tanto a API quanto os arquivos estáticos do Frontend no mesmo domínio (evitando problemas de CORS).
 
-**Terminal 1 — Backend (FastAPI):**
+**No Terminal:**
 ```bash
 source venv/bin/activate
 cd backend
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
-- API rodando em: `http://localhost:8000`
-- Documentação interativa Swagger: `http://localhost:8000/docs`
-
-**Terminal 2 — Frontend:**
-```bash
-cd frontend
-python3 -m http.server 3000
-```
-- Acesse a aplicação no navegador em: **`http://localhost:3000`**
+- Acesse a aplicação completa no navegador em: **`http://localhost:8000`**
+- Documentação interativa da API Swagger: `http://localhost:8000/docs`
+- Portal protegido ADK Web UI: `http://localhost:8000/adk/`
 
 ---
 
@@ -183,7 +180,7 @@ gcloud run deploy tripadinho \
   --project SEU_PROJETO_ID \
   --region southamerica-east1 \
   --allow-unauthenticated \
-  --set-env-vars "SUPABASE_URL=https://SEU_PROJETO.supabase.co,SUPABASE_KEY=SUA_KEY,GEMINI_API_KEY=SUA_KEY_GEMINI" \
+  --set-env-vars "SUPABASE_URL=https://SEU_PROJETO.supabase.co,SUPABASE_KEY=SUA_SERVICE_ROLE_KEY,SUPABASE_ANON_KEY=SUA_ANON_KEY,GEMINI_API_KEY=SUA_KEY_GEMINI,ADK_USER=admin,ADK_PASS=senha123" \
   --quiet
 ```
 
@@ -206,8 +203,10 @@ adk deploy cloud_run adk_agent \
   --service_name=tripadinho-adk-agent \
   --with_ui \
   --env SUPABASE_URL=https://SEU_PROJETO.supabase.co \
-  --env SUPABASE_KEY=SUA_KEY \
+  --env SUPABASE_KEY=SUA_SERVICE_ROLE_KEY \
   --env GEMINI_API_KEY=SUA_KEY_GEMINI \
+  --env ADK_USER=admin \
+  --env ADK_PASS=senha123 \
   -- --allow-unauthenticated
 ```
 

@@ -18,16 +18,22 @@
                     <a href="index.html" class="flex-shrink-0 flex items-center text-2xl font-black text-blue-600 tracking-tight">
                         🌴 Tripadinho
                     </a>
-                    <div class="hidden md:flex space-x-4">
+                    <div class="hidden md:flex space-x-4 items-center">
                         <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Início</a>
                         <a href="destination.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Experiências</a>
-                        <a href="objectives.html" class="text-blue-600 font-bold px-3 py-2 rounded-md text-sm transition">Meus Objetivos</a>
+                        <a href="objectives.html" class="text-blue-600 font-bold transition auth-logged-in hidden">Meus Objetivos</a>
+                        <a href="profile.html" class="text-slate-600 hover:text-blue-600 font-semibold transition auth-logged-in hidden">Meu Perfil</a>
                         <a href="/adk/" target="_blank" class="text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold px-3 py-1.5 rounded-full transition text-xs flex items-center border border-purple-200">🤖 ADK Web UI</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div id="auth-section">
-                        <!-- Renderizado via app.js -->
+                        <a href="login.html" id="login-btn" class="auth-logged-out bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-blue-700 hover:shadow-lg transition transform hover:-translate-y-0.5 inline-block">
+                            Entrar
+                        </a>
+                        <button onclick="window.auth.signOut()" class="auth-logged-in hidden text-red-600 hover:text-red-800 font-semibold ml-4">
+                            Sair
+                        </button>
                     </div>
                 </div>
             </div>
@@ -98,6 +104,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
     <script src="js/chatWidget.js"></script>
     <script>
@@ -117,7 +124,7 @@
         async function loadObjectives() {
             const container = document.getElementById('objectives-container');
             
-            if (!currentUser) {
+            if (!window.auth.session) {
                 container.innerHTML = `
                     <div class="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-lg mx-auto shadow-sm">
                         <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -125,16 +132,16 @@
                         </div>
                         <h2 class="text-xl font-bold text-slate-900 mb-2">Acesse sua conta</h2>
                         <p class="text-slate-500 text-sm mb-6">Entre com sua conta do Google para visualizar e gerenciar seus objetivos e roteiros salvos.</p>
-                        <button onclick="signInWithGoogle()" class="bg-blue-600 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition shadow-md">
-                            Entrar com Google
-                        </button>
+                        <a href="login.html" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-bold text-sm hover:bg-blue-700 transition shadow-md">
+                            Ir para o Login
+                        </a>
                     </div>
                 `;
                 return;
             }
 
             try {
-                savedCards = await fetchUserSavedCards(currentUser.id);
+                savedCards = await fetchUserSavedCards();
                 updateStats();
                 renderPills();
                 renderCards();
@@ -277,10 +284,10 @@
         }
 
         async function removeObjective(title, cardId) {
-            if (!currentUser) return;
+            if (!window.auth.session) return;
             
             try {
-                await removeExperienceCard(currentUser.id, title, cardId);
+                await removeExperienceCard(title, cardId);
                 savedCards = savedCards.filter(c => c.title !== title);
                 showToast(`"${title}" removido com sucesso!`);
                 updateStats();
@@ -292,8 +299,12 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(loadObjectives, 600);
+        document.addEventListener('DOMContentLoaded', async () => {
+            await window.auth.init();
+            window.auth.requireAuth();
+            if (window.auth.session) {
+                loadObjectives();
+            }
         });
     </script>
 </body>

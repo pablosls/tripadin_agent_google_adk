@@ -18,16 +18,22 @@
                     <a href="index.html" class="flex-shrink-0 flex items-center text-2xl font-black text-blue-600 tracking-tight">
                         🌴 Tripadinho
                     </a>
-                    <div class="hidden md:flex space-x-4">
+                    <div class="hidden md:flex space-x-4 items-center">
                         <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Início</a>
-                        <a href="destination.html" class="text-blue-600 font-bold px-3 py-2 rounded-md text-sm transition">Experiências</a>
-                        <a href="objectives.html" class="text-slate-600 hover:text-blue-600 px-3 py-2 rounded-md font-medium text-sm transition">Meus Objetivos</a>
+                        <a href="destination.html" class="text-blue-600 font-bold transition">Experiências</a>
+                        <a href="objectives.html" class="text-slate-600 hover:text-blue-600 font-semibold transition auth-logged-in hidden">Meus Objetivos</a>
+                        <a href="profile.html" class="text-slate-600 hover:text-blue-600 font-semibold transition auth-logged-in hidden">Meu Perfil</a>
                         <a href="/adk/" target="_blank" class="text-purple-700 bg-purple-50 hover:bg-purple-100 font-bold px-3 py-1.5 rounded-full transition text-xs flex items-center border border-purple-200">🤖 ADK Web UI</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
                     <div id="auth-section">
-                        <!-- Renderizado via app.js -->
+                        <a href="login.html" id="login-btn" class="auth-logged-out bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold hover:bg-blue-700 hover:shadow-lg transition transform hover:-translate-y-0.5 inline-block">
+                            Entrar
+                        </a>
+                        <button onclick="window.auth.signOut()" class="auth-logged-in hidden text-red-600 hover:text-red-800 font-semibold ml-4">
+                            Sair
+                        </button>
                     </div>
                 </div>
             </div>
@@ -107,6 +113,7 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth.js"></script>
     <script src="js/app.js"></script>
     <script src="js/chatWidget.js"></script>
     <script>
@@ -184,9 +191,9 @@
         // Carrega cards salvos do usuário atual para marcar botões
         async function loadUserSavedSet() {
             savedCardsMap.clear();
-            if (!currentUser) return;
+            if (!window.auth.session) return;
             try {
-                const saved = await fetchUserSavedCards(currentUser.id);
+                const saved = await fetchUserSavedCards();
                 saved.forEach(c => savedCardsMap.add(c.title));
             } catch (err) {
                 console.warn("Erro ao buscar cartões salvos do usuário:", err);
@@ -286,27 +293,29 @@
 
         // Alterna entre Salvar ou Remover dos Objetivos
         async function toggleCardSave(expJsonEncoded, btn) {
-            if (!currentUser) {
-                alert("Você precisa entrar na sua conta para salvar experiências nos Meus Objetivos!");
-                signInWithGoogle();
+            if (!window.auth.session) {
+                alert("Faça login para salvar seus objetivos.");
+                window.location.href = "login.html";
                 return;
             }
 
             const exp = JSON.parse(decodeURIComponent(expJsonEncoded));
             const isSaved = savedCardsMap.has(exp.title);
             
-            btn.disabled = true;
-            btn.innerHTML = `<span class="animate-pulse">Atualizando...</span>`;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="animate-pulse">Atualizando...</span>`;
+            }
 
             try {
                 if (isSaved) {
                     // Remover
-                    await removeExperienceCard(currentUser.id, exp.title, exp.id);
+                    await removeExperienceCard(exp.title, exp.id);
                     savedCardsMap.delete(exp.title);
                     showToast(`"${exp.title}" removido dos Meus Objetivos!`, false);
                 } else {
                     // Salvar
-                    await saveExperienceCard(currentUser.id, exp);
+                    await saveExperienceCard(exp);
                     savedCardsMap.add(exp.title);
                     showToast(`"${exp.title}" salvo em Meus Objetivos!`, true);
                 }
@@ -334,10 +343,9 @@
             }
 
             // Aguarda inicialização de auth e carrega dados
-            setTimeout(async () => {
-                await loadUserSavedSet();
-                await loadExperiences();
-            }, 500);
+            await window.auth.init();
+            await loadUserSavedSet();
+            await loadExperiences();
         });
     </script>
 </body>

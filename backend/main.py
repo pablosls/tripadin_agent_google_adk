@@ -5,25 +5,82 @@ from typing import List, Optional
 from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 import google.generativeai as genai
 
 # Ensure backend directory is in path
 sys.path.insert(0, os.path.dirname(__file__))
 
-from database import supabase
+from database import supabase, anon_key, url as supabase_url
 
 app = FastAPI(title="Tripadinho API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "https://tripadinho-49968947040.southamerica-east1.run.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 genai.configure(api_key=os.environ.get("GEMINI_API_KEY", ""))
+
+import base64
+from fastapi import Response
+
+@app.middleware("http")
+async def basic_auth_middleware(request: Request, call_next):
+    if request.url.path.startswith("/adk"):
+        auth_header = request.headers.get("Authorization")
+        expected_user = os.environ.get("ADK_USER", "admin")
+        expected_pass = os.environ.get("ADK_PASS", "admin123")
+        
+        is_authenticated = False
+        if auth_header and auth_header.startswith("Basic "):
+            try:
+                encoded_credentials = auth_header.split(" ")[1]
+                decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
+                username, password = decoded_credentials.split(":", 1)
+                if username == expected_user and password == expected_pass:
+                    is_authenticated = True
+            except:
+                pass
+                
+        if not is_authenticated:
+            return Response(
+                content="Unauthorized",
+                status_code=401,
+                headers={"WWW-Authenticate": "Basic realm=\"ADK Web UI\""},
+            )
+            
+    response = await call_next(request)
+    return response
+
+security = HTTPBearer()
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Supabase não configurado")
+    token = credentials.credentials
+    try:
+        user_response = supabase.auth.get_user(token)
+        if not user_response or not user_response.user:
+            raise HTTPException(status_code=401, detail="Token inválido ou expirado")
+        return user_response.user.id
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Não autenticado: {str(e)}")
+
+@app.get("/api/config")
+async def get_config():
+    return {
+        "supabase_url": supabase_url,
+        "supabase_anon_key": anon_key
+    }
 
 # Define the Tool / Function for Gemini
 def search_places(query: str, destination: str, type: str) -> List[dict]:
@@ -79,7 +136,7 @@ class Card(BaseModel):
     type: str
 
 class SaveCardRequest(BaseModel):
-    user_id: str
+    user_id: Optional[str] = None
     card: Card
 
 @app.post("/api/chat")
@@ -141,7 +198,7 @@ async def chat_endpoint(req: ChatMessage):
         return {"response": f"Desculpe, ocorreu um erro: {str(e)}", "cards": []}
 
 class RemoveCardRequest(BaseModel):
-    user_id: str
+    user_id: Optional[str] = None
     card_id: Optional[str] = None
     title: Optional[str] = None
 
@@ -194,17 +251,17 @@ async def get_experiences(destination: Optional[str] = None):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/cards/save")
-async def save_card(req: SaveCardRequest):
+async def save_card(req: SaveCardRequest, current_user_id: str = Depends(get_current_user)):
     if not supabase:
         raise HTTPException(status_code=500, detail="Supabase não configurado")
     try:
         # Check if already saved
-        existing = supabase.table("saved_cards").select("id").eq("user_id", req.user_id).eq("title", req.card.title).execute()
+        existing = supabase.table("saved_cards").select("id").eq("user_id", current_user_id).eq("title", req.card.title).execute()
         if existing.data and len(existing.data) > 0:
             return {"message": "Card já estava salvo", "data": existing.data[0]}
 
         data = {
-            "user_id": req.user_id,
+            "user_id": current_user_id,
             "card_id": req.card.id or str(req.card.title),
             "destination": req.card.destination,
             "title": req.card.title,
@@ -218,11 +275,11 @@ async def save_card(req: SaveCardRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/cards/remove")
-async def remove_card(req: RemoveCardRequest):
+async def remove_card(req: RemoveCardRequest, current_user_id: str = Depends(get_current_user)):
     if not supabase:
         raise HTTPException(status_code=500, detail="Supabase não configurado")
     try:
-        query = supabase.table("saved_cards").delete().eq("user_id", req.user_id)
+        query = supabase.table("saved_cards").delete().eq("user_id", current_user_id)
         if req.title:
             query = query.eq("title", req.title)
         elif req.card_id:
@@ -235,15 +292,31 @@ async def remove_card(req: RemoveCardRequest):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@app.get("/cards/saved/{user_id}")
-async def get_saved_cards(user_id: str):
+@app.get("/cards/saved")
+async def get_saved_cards(current_user_id: str = Depends(get_current_user)):
     if not supabase:
         raise HTTPException(status_code=500, detail="Supabase não configurado")
     try:
-        res = supabase.table("saved_cards").select("*").eq("user_id", user_id).execute()
+        res = supabase.table("saved_cards").select("*").eq("user_id", current_user_id).execute()
         return {"cards": res.data}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@app.delete("/api/users/me")
+async def delete_current_user(current_user_id: str = Depends(get_current_user)):
+    if not supabase:
+        raise HTTPException(status_code=500, detail="Supabase não configurado")
+    try:
+        # Primeiro exclui todos os cards salvos pelo usuário (para manter o banco limpo)
+        supabase.table("saved_cards").delete().eq("user_id", current_user_id).execute()
+        
+        # Em seguida, exclui o usuário do módulo de Auth do Supabase
+        # Necessita de privilégios de Service Role Key, que o backend já usa
+        supabase.auth.admin.delete_user(current_user_id)
+        
+        return {"message": "Conta e todos os dados associados foram excluídos com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erro ao excluir conta: {str(e)}")
 
 # Mount Google ADK Web UI at /adk
 try:

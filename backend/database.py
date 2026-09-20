@@ -5,7 +5,8 @@ from supabase import create_client, Client
 load_dotenv()
 
 url: str = os.environ.get("SUPABASE_URL", "")
-key: str = os.environ.get("SUPABASE_KEY", "")
+key: str = os.environ.get("SUPABASE_KEY", "") # Service Role Key
+anon_key: str = os.environ.get("SUPABASE_ANON_KEY", "")
 
 # Initialize supabase client if keys are present
 if url and key:
